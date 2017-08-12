@@ -1,0 +1,43 @@
+{
+  "name": "deveodk/laravel-core-time-tracker",
+  "type": "library",
+  "description": "Advanced and highly precise time tracking of core users",
+  "keywords": [
+    "deveodk",
+    "api",
+    "time tracking"
+  ],
+  "homepage": "https://github.com/Deveodk/laravel-core-time-tracker",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jason Kelly",
+      "email": "jk@deveo.dk",
+      "homepage": "https://deveo.io",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php" : "~5.6|~7.0",
+    "spatie/laravel-fractal": "^4.01"
+  },
+  "require-dev": {
+    "phpunit/phpunit" : "~4.0||~5.0||~6.0",
+    "squizlabs/php_codesniffer": "^2.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "DeveoDK\\CoreTimeTracker\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
+  },
+  "config": {
+    "sort-packages": true
+  }
+}
