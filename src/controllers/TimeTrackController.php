@@ -2,90 +2,41 @@
 
 namespace DeveoDK\CoreTimeTracker\Controllers;
 
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use DeveoDK\CoreTimeTracker\Requests\NewTimeTrack;
+use DeveoDK\CoreTimeTracker\Services\OptionService;
+use DeveoDK\CoreTimeTracker\Services\TimeTrackService;
 use Infrastructure\Http\BaseController;
 
 class TimeTrackController extends BaseController
 {
-    /** @var ApiAuthenticatorService */
-    private $apiAuthenticatorService;
-
     /** @var OptionService */
     private $optionService;
 
+    /** @var TimeTrackService */
+    private $timeTrackService;
+
     public function __construct(
-        ApiAuthenticatorService $apiAuthenticatorService,
-        OptionService $optionService
+        OptionService $optionService,
+        TimeTrackService $timeTrackService
     ) {
-        $this->apiAuthenticatorService = $apiAuthenticatorService;
         $this->optionService = $optionService;
-        $this->apiAuthenticatorService->setModels($optionService->get('authenticationModels'));
+        $this->timeTrackService = $timeTrackService;
     }
 
     /**
-     * @param AuthAccountsRequest $request
-     * @return JsonResponse
+     * @param NewTimeTrack $request
+     * @return void
      */
-    public function newTracking(AuthAccountsRequest $request)
+    public function newTracking(NewTimeTrack $request)
     {
-        $data = $this->apiAuthenticatorService->accounts($request->data());
+        $tracks = $request->data();
 
-        return response()
-            ->json($this->apiAuthenticatorService
-                ->setTransformer(new AuthAccountTransformer())->transformCollection($data));
-    }
+        if (empty($tracks['data'])) {
+            return;
+        }
 
-    /**
-     * Authenticate the from email and password
-     * @param AuthPasswordRequest $request
-     * @return JsonResponse
-     */
-    public function authenticate(AuthPasswordRequest $request)
-    {
-        $data = $this->apiAuthenticatorService->authenticate($request->data());
-
-        return response()
-            ->json($this->apiAuthenticatorService->setTransformer(new AuthorizedTransformer())->transformItem($data))
-            ->header('Authorization', $data);
-    }
-
-    /**
-     * Get the authenticated user
-     * @return JsonResponse
-     */
-    public function authenticatedUser()
-    {
-        $data = $this->apiAuthenticatorService->getUser();
-        return response()
-            ->json($this->apiAuthenticatorService->setTransformer(new AuthTransformer())->transformItem($data));
-    }
-
-    /**
-     * The actual refresh process gets handled in the middleware
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function authenticatedRefresh(Request $request)
-    {
-        $this->apiAuthenticatorService->refreshToken();
-        $token = str_replace("Bearer ", "", $request->header('authorization'));
-        $data = $this->apiAuthenticatorService->setTransformer(new AuthRefreshedTransformer())->transformItem($token);
-
-        return response()->json($data)->header('Authorization', $token);
-    }
-
-    /**
-     * Invalidate a JWT token
-     * @param Request $request
-     * @return array
-     */
-    public function authenticatedInvalidate(Request $request)
-    {
-        $this->apiAuthenticatorService->invalidateToken();
-        $token = str_replace("Bearer ", "", $request->header('authorization'));
-        $data = $this->apiAuthenticatorService->setTransformer(new AuthInvalidatedTransformer())->transformItem($token);
-
-        return response()->json($data);
+        foreach ($tracks['data'] as $track) {
+            $this->timeTrackService->createNewTimeTrack($track);
+        }
     }
 }

@@ -15,10 +15,11 @@ class CreateCoreTimeTracksTable extends Migration
     {
         Schema::create('core_time_tracks', function (Blueprint $table) {
             $table->increments('id');
-            $table->text('user_agent');
+            $table->text('user_agent')->nullable();
             $table->float('time');
             $table->string('page');
-            $table->ipAddress("ip");
+            $table->string('origin');
+            $table->ipAddress("ip")->nullable();
             $table->unsignedInteger('tracked_id')->nullable();
             $table->string('tracked_type')->nullable();
             $table->timestamps();

@@ -18,7 +18,8 @@ class NewTimeTrack extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'email|required'
+            'data.*.pageName' => 'required|string',
+            'data.*.timeOnPage' => 'required'
         ];
     }
 
@@ -29,7 +30,7 @@ class NewTimeTrack extends FormRequest
     public function data()
     {
         return [
-            'email' => $this->email,
+            'data' => $this->data
         ];
     }
 }
